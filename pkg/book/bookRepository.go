@@ -25,12 +25,11 @@ type BookNeo4jRepository struct {
 
 func (b BookNeo4jRepository) GetBook(id int) (Book, error) {
 	books, err := b.GetBooks(id)
-	fmt.Println(books)
 	if err != nil {
 		fmt.Println(err)
 		return Book{}, err
 	}
-	return books[1], nil
+	return books[0], nil
 }
 
 func (b BookNeo4jRepository) GetBooks(id int) ([]Book, error) {
@@ -48,23 +47,21 @@ func (b BookNeo4jRepository) GetBooks(id int) ([]Book, error) {
 			fmt.Println(err)
 		}
 
-		response := make([]Book, 1)
+		var response []Book
 		var record *neo4j.Record
 		for result.NextRecord(ctx, &record) {
 			id, _ := record.Get("id")
-			if id.(int64) <= 0 {
-				continue
-			}
 			name, _ := record.Get("name")
 			isbn, _ := record.Get("isbn")
 			language, _ := record.Get("language")
 
-			response = append(response, Book{
+			book := Book{
 				ID:       id.(int64),
 				ISBN:     isbn.(string),
 				Title:    name.(string),
 				Language: language.(string),
-			})
+			}
+			response = append(response, book)
 		}
 
 		return response, nil
