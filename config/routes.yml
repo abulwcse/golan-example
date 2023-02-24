@@ -1,0 +1,4 @@
+home:
+  path: /
+  method: GET
+  handler: BookIndexController
